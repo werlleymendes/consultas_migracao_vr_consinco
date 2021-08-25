@@ -49,6 +49,17 @@ LEFT JOIN (SELECT rc.id, SUM(rci.valor) as valorabatimento
 ON rc.id = rci.id
 WHERE rc.id_situacaorecebercreditorotativo = 0;
 
+
+
+
+
+
+
+/*Consultas auxiliares utilizadas para desenvolvimento da query principal*/
+
+
+/*Consulta utilizada para criar uma pseudo-tabela com a soma dos abatimentos, para
+poder enviar apenas o restante na query principal.*/
 SELECT rc.id, rc.numerocupom, rc.valor, rci.valorabatimento,  
 (rc.valor - rci.valorabatimento) as totalliquido, rc.dataemissao
 FROM recebercreditorotativo as rc
