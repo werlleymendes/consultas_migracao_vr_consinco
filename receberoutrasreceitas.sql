@@ -1,55 +1,25 @@
 /*CONSULTA PARA MIGRAÇÃO DO BANCO DE DADOS DO VR PARA O C5*/
-/*CONTAS A RECEBER*/
+/*Migração das outras receitas do Banco de dados do VR para o Consinco*/
 
 SELECT null as "SeqIntTitulo", 1 as "TipoRegistro", 1 as "NroEmpresaMae",
 CASE 
-when pf.id_loja = 1 then 1
-when pf.id_loja = 2 then 2
-when pf.id_loja = 4 then 3
+when ro.id_loja = 1 then 1
+when ro.id_loja = 2 then 2
+when ro.id_loja = 4 then 3
 end as "NroEmpresa",
-'DUPR' as "CodEspecie", 
-FROM 
+'DUPR' as "CodEspecie", null as "TipoCodGerente", null as "CodGerente", 
+null as "TipoCodVendedor", null as "CodVendedor", 2 as "TipoCodPessoa",
 
-SELECT * FROM situacaorecebercaixa;
-
-SELECT * FROM recebercaixaitemrecebercaixa;
-
-SELECT * FROM recebercaixavendatef;
-
-select * FROM receberchequehistorico;
-
-SELECT * FROM receberchequeitem;
-
-SELECT * FROM situacaorecebercreditorotativo;
-
-select * from tiporecebivel where id = 45 
-
-SELECT * FROM recebercaixaitem where id_recebercaixa BETWEEN 750 and 1000 ORDER BY id_recebercaixa;
-
-SELECT * FROM tiporecebimento;
-
-SELECT * FROM receberdevolucao WHERE id_situacaoreceberdevolucao = 0;
-
-SELECT * FROM situacaoreceberdevolucao;
-
-SELECT sum(valorliquido) FROM receberverba where id_situacaoreceberverba = 0 and datavencimento <= '2021-04-30';
-
-/*TABELA DO BANCO QUE ARMAZENA OS RECEBÍVEIS DE CARTÃO*/
-SELECT sum(valor) FROM recebercaixa where id_situacaorecebercaixa = 0;
-
-SELECT * FROM situacaorecebercaixa;
-
-SELECT sum(valor) FROM recebercheque WHERE id_situacaorecebercheque = 0;
-
-SELECT sum(valor) FROM recebercreditorotativo WHERE id_situacaorecebercreditorotativo = 0;
-
-SELECT * FROM receberoutrasreceitas WHERE id_situacaoreceberoutrasreceitas = 0 and valor = 5.16;
-
-SELECT sum(valorliquido) FROM recebervendaprazo WHERE id_situacaorecebervendaprazo = 0;
+FROM receberoutrasreceitas as ro
 
 
-SELECT tablename FROM pg_tables WHERE tablename like '%receberdevol%';
 
-;
+SELECT * FROM receberoutrasreceitas WHERE id_situacaoreceberoutrasreceitas = 0;
 
+SELECT * FROM receberoutrasreceitasitem LIMIT 10;
 
+SELECT sum(roi.valor) 
+FROM receberoutrasreceitas as ro
+JOIN receberoutrasreceitasitem as roi
+ON ro.id = roi.id_receberoutrasreceitas
+WHERE ro.id_situacaoreceberoutrasreceitas = 0;
