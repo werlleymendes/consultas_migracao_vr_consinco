@@ -10,10 +10,10 @@ NroCarga, PerJuroMora, DtaMovimento, OrdenaCarga, DtaCarga, Situacao,
 Origem, SeqTitulo, SeqDepositario, NroProcesso, UsuAlteracao, IndReplicacao,
 IndGerouReplicacao, VlrDescComercial, SitCheqDev, CodBarra, LotePagto,
 SitJuridica, Percadministracao, Vlradministracao, Dtacontabilizacao, linkerp,
-Qtdparcela, Vlrcomissaofat, Seqboleto, Seqmotorista, Percdesccontrato,
-Vlrdesccontrato, Justcancel, CMC7, apporigem) values 
+Qtdparcela, Seqboleto, Seqmotorista, Percdesccontrato,
+Vlrdesccontrato, Justcancel, Numeronfse) values 
 (SELECT 
-null  "SeqIntTitulo", 1  "TipoRegistro", 1  "NroEmpresaMae",
+CONSINCO.S_FINANCEIRO.NEXTVAL "SeqIntTitulo", 1 varchar2(1)  "TipoRegistro", 1  "NroEmpresaMae",
 --A nossa loja 4 no VR será a loja N°3 no consinco, por isso a necessidade de mudar na query 
 CASE 
 when pf."id_loja" = 1 then 1
@@ -32,8 +32,8 @@ null  "TipoCodGerente", null  "CodGerente", null  "TipoCodVendedor",
 null  "CodVendedor", 2  "TipoCodPessoa",
 CASE
   WHEN length(f."cnpj") > 11 THEN
-       SUBSTR(cast(f."cnpj"  as varchar2(14)), 0,11)
-  ELSE SUBSTR(cast(f."cnpj"  as varchar2(14)), 0,8)
+       SUBSTR(cast(f."cnpj" as varchar2(14)), 0,11)
+  ELSE SUBSTR(cast(f."cnpj" as varchar2(14)), 0,8)
     END "CodPessoa",
 2  "TipoCodPessoaNota",
 CASE
@@ -41,8 +41,8 @@ CASE
        SUBSTR(cast(f."cnpj"  as varchar2(14)), 0,11)
   ELSE SUBSTR(cast(f."cnpj"  as varchar2(14)), 0,8)
     END  "CodPessoaNota", 
-pf."numerodocumento"  "NroTitulo", ne."serie"  "SerieTitulo", pff."numeroparcela" "NroParcela", 
-ne."numeronota"  "NroDocumento", ne."serie"  "SerieDoc",
+pf."numerodocumento" "NroTitulo", ne."serie" "SerieTitulo", pff."numeroparcela" "NroParcela", 
+ne."numeronota" "NroDocumento", ne."serie" "SerieDoc",
 (pff."valor" + coalesce(pff."valoracrescimo", 0) - coalesce(pfa.valorabatimento, 0) -
   coalesce(pfad.valoradiantamento, 0) - coalesce(pfdv.valordevolucao, 0) 
   - coalesce(pfvba.valorverba, 0))  "VlrOriginal", 
@@ -54,23 +54,21 @@ pf."numerodocumento" "Observacao", null  "CodigoFator",
 --verificar se realmente não tem imposto
 0 as "VlrDscFinanc", 0 as "PctDescFinanc",
 pff."datavencimento"  "DtaLimDscFinanc", 'S'  "CodCarteira", null  "Banco", 
-null  "Agencia", ''  "NroCompensacao", null  "CtaEmitente", null  "ProprioTerceiro",
-0  "SeqCtaCorrente", ''  "NossoNumero", null  "DigNossoNum", 'T'  "TituloCaixa",
-'BLT'  "TipoNegociacao", null  "NroCarga", null  "PerJuroMora",
-pf."dataentrada"  "DtaMovimento", null  "OrdenaCarga", null  "DtaCarga",
+null  "Agencia", null  "NroCompensacao", null  "CtaEmitente", null  "ProprioTerceiro",
+0  "SeqCtaCorrente", null  "NossoNumero", null  "DigNossoNum", 'T'  "TituloCaixa",
+'BLT'  "TipoNegociacao", null  "NroCarga", null  "PerJuroMora", 
+ne."dataentrada" "DtaMovimento", null  "OrdenaCarga", null  "DtaCarga",
 'J'  "Situacao", null  "Origem", 
-/*FALAR COM O ESPECIALISTA DA CONSINCO PARA AJUDAR NA QUERY*/
-'' "SeqTitulo",
+CONSINCO.S_FINANCEIRO.NEXTVAL "SeqTitulo",
 2  "SeqDepositario",
-/*FALAR COM O ESPECIALISTA DA CONSINCO PARA AJUDAR NA QUERY*/
-'' "NroProcesso",
- 'ORCAMENTO'  "UsuAlteracao",
+CONSINCO.S_FINANCEIRO.NEXTVAL "NroProcesso",
+ 'IMPORTACAO'  "UsuAlteracao",
 null  "IndReplicacao", null  "IndGerouReplicacao", null  "VlrDescComercial",
 null  "SitCheqDev", null  "CodBarra", null  "LotePagto", 'N'  "SitJuridica",
-null  "Percadministracao", null  "Vlradministracao", null  "Dtacontabilizacao",
-null  "Linkerp", null  "Qtdparcela", null  "Vlrcomissaofat", null  "Seqboleto",
+null  "Percadministracao", null  "Vlradministracao", '09-09-2021' "Dtacontabilizacao",
+null  "Linkerp", null  "Qtdparcela", null  "Seqboleto",
 null  "Seqmotorista", null  "Percdesccontrato", null  "Vlrdesccontrato",
-null  "Justcancel", null  "CMC7", null  "Apporigem" 
+null  "Justcancel", null  "Numeronfse" 
 FROM "pagarfornecedor"@pg  pf JOIN "fornecedor"@pg  f
 ON pf."id_fornecedor" = f."id"
 LEFT JOIN "pagarfornecedorparcela"@pg  pff
@@ -104,13 +102,16 @@ WHERE pfp."id" = pfvb."id_pagarfornecedorparcela"
 and pfp."id_situacaopagarfornecedorparcela" = 0
 GROUP BY pfp."id") pfvba
 ON pff."id" = pfvba.id
-WHERE pff."id_situacaopagarfornecedorparcela" = 0);
-
+WHERE pff."id_situacaopagarfornecedorparcela" = 0
+AND pf."numerodocumento" = 120153);
 
 --SELECT * FROM "view_contasapagar"@pg;
 
+--SELECT * FROM consinco.map_produto p WHERE trunc(p.dtahorinclusao) = '09-09-2021'
 
+--SELECT sysdate FROM dual;
 
+sELECT * FROM consinco.fi_inttitulo;
 
 /*CONSULTA UTILIZADA PARA FAZER INSERT NA TABELA Tabela FI_IntTitulo*/
 /*
