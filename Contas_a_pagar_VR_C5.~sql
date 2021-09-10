@@ -11,9 +11,10 @@ Origem, SeqTitulo, SeqDepositario, NroProcesso, UsuAlteracao, IndReplicacao,
 IndGerouReplicacao, VlrDescComercial, SitCheqDev, CodBarra, LotePagto,
 SitJuridica, Percadministracao, Vlradministracao, Dtacontabilizacao, linkerp,
 Qtdparcela, Seqboleto, Seqmotorista, Percdesccontrato,
-Vlrdesccontrato, Justcancel, Numeronfse) values 
-((SELECT 
-CONSINCO.S_FINANCEIRO.NEXTVAL "SeqIntTitulo", 1  "TipoRegistro", 1  "NroEmpresaMae",
+Vlrdesccontrato, Justcancel, CMC7, Apporigem, Seqpessoaemitente, 
+PrazoCompror, TaxaCompror, DtaBaseCobranca, VLRICMSSTPARC1,  Numeronfse)  
+SELECT CONSINCO.S_FINANCEIRO.NEXTVAL "SeqIntTitulo", 1 "TipoRegistro", 
+1  "NroEmpresaMae",
 --A nossa loja 4 no VR será a loja N°3 no consinco, por isso a necessidade de mudar na query 
 CASE 
 when pf."id_loja" = 1 then 1
@@ -32,16 +33,16 @@ null  "TipoCodGerente", null  "CodGerente", null  "TipoCodVendedor",
 null  "CodVendedor", 2  "TipoCodPessoa",
 CASE
   WHEN length(f."cnpj") > 11 THEN
-       SUBSTR(cast(f."cnpj"  as varchar2(14)), 0,11)
-  ELSE SUBSTR(cast(f."cnpj"  as varchar2(14)), 0,8)
+       SUBSTR(f."cnpj", 0,11)
+  ELSE SUBSTR(f."cnpj", 0,8)
     END "CodPessoa",
 2  "TipoCodPessoaNota",
 CASE
   WHEN length(f."cnpj") > 11 THEN
-       SUBSTR(cast(f."cnpj"  as varchar2(14)), 0,11)
-  ELSE SUBSTR(cast(f."cnpj"  as varchar2(14)), 0,8)
+       SUBSTR(f."cnpj", 0,11)
+  ELSE SUBSTR(f."cnpj", 0,8)
     END  "CodPessoaNota", 
-pf."numerodocumento" "NroTitulo", ne."serie" "SerieTitulo", pff."numeroparcela" "NroParcela", 
+pff."id" "NroTitulo", ne."serie" "SerieTitulo", pff."numeroparcela" "NroParcela", 
 ne."numeronota" "NroDocumento", ne."serie" "SerieDoc",
 (pff."valor" + coalesce(pff."valoracrescimo", 0) - coalesce(pfa.valorabatimento, 0) -
   coalesce(pfad.valoradiantamento, 0) - coalesce(pfdv.valordevolucao, 0) 
@@ -68,7 +69,9 @@ null  "SitCheqDev", null  "CodBarra", null  "LotePagto", 'N'  "SitJuridica",
 null  "Percadministracao", null  "Vlradministracao", null "Dtacontabilizacao",
 null  "Linkerp", null  "Qtdparcela", null  "Seqboleto",
 null  "Seqmotorista", null  "Percdesccontrato", null  "Vlrdesccontrato",
-null  "Justcancel", null  "Numeronfse" 
+null  "Justcancel", null "CMC7", null "AppOrigem", null "SeqPessoaEmitente",
+null "PrazoCompror", null "TaxaCompror", null "DtaBaseCobranca", null "VLRICMSSTPARC1",
+null  "Numeronfse"
 FROM "pagarfornecedor"@pg  pf JOIN "fornecedor"@pg  f
 ON pf."id_fornecedor" = f."id"
 LEFT JOIN "pagarfornecedorparcela"@pg  pff
@@ -86,7 +89,7 @@ LEFT JOIN (SELECT pfp."id"  id, sum(pfad."valor")  valoradiantamento
 FROM "pagarfornecedorparcela"@pg  pfp
 JOIN "pagarfornecedorparcelaadiantamento"@pg  pfad
 ON pfp."id" = pfad."id_pagarfornecedorparcela"
-WHERE pfp."id_situacaopagarfornecedorparcela" =0
+WHERE pfp."id_situacaopagarfornecedorparcela" = 0
 GROUP BY pfp."id")  pfad
 ON pff."id" = pfad.id
 LEFT JOIN (SELECT pfp."id"  "id", sum(pfdv."valor")  valordevolucao
@@ -103,12 +106,15 @@ and pfp."id_situacaopagarfornecedorparcela" = 0
 GROUP BY pfp."id") pfvba
 ON pff."id" = pfvba.id
 WHERE pff."id_situacaopagarfornecedorparcela" = 0
-AND pf."numerodocumento" = 120153);
+AND pf."numerodocumento" = '120153';
+
 --SELECT * FROM "view_contasapagar"@pg;
 
---SELECT sysdate FROM dual;
+--SELECT * FROM consinco.map_produto p WHERE trunc(p.dtahorinclusao) = '09-09-2021'
 
---SELECT * FROM consinco.fi_inttitulo;
+--SELECT sysdate FROM dual;
+DELETE FROM consinco.fi_inttitulo f WHERE f.seqinttitulo = 631; 
+sELECT * FROM consinco.fi_inttitulo;
 
 /*CONSULTA UTILIZADA PARA FAZER INSERT NA TABELA Tabela FI_IntTitulo*/
 /*
