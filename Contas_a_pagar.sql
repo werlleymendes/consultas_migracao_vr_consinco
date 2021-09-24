@@ -1,6 +1,9 @@
 /*CONSULTA PARA MIGRAÇÃO DO BANCO DE DADOS DO VR PARA O C5*/
 /*CONTAS A PAGAR*/
 
+SELECT * FROM view_contasapagar;
+
+CREATE VIEW view_contasapagar as
 /*CONSULTA UTILIZADA PARA FAZER INSERT NA TABELA Tabela FI_IntTitulo*/
 SELECT 
 null as "SeqIntTitulo", 1 as "TipoRegistro", 1 as "NroEmpresaMae",
@@ -28,7 +31,7 @@ ne.numeronota AS "NroDocumento", ne.serie AS "SerieDoc",
 (pff.valor + coalesce(pff.valoracrescimo, 0) - coalesce(pfa.valorabatimento, 0) -
 	coalesce(pfad.valoradiantamento, 0) - coalesce(pfdv.valordevolucao, 0) 
 	- coalesce(pfvb.valorverba, 0)) AS "VlrOriginal", pf.dataemissao AS "DtaEmissao",
-pff.datavencimento AS "DtaEmissao", pff.datavencimento AS "DtaVencimento",
+	pff.datavencimento AS "DtaVencimento",
 'P' as "TipoVencOriginal", null as "DtaProgramada", 
 /*A observação é a concatenação do número do título com a observação lançada no VR software*/
 concat_ws('; ', pf.numerodocumento, replace(pff.observacao, ',' , '.')) as "Observacao", null as "CodigoFator",
@@ -40,7 +43,9 @@ null as "Agencia", '' as "NroCompensacao", null as "CtaEmitente", null as "Propr
 0 as "SeqCtaCorrente", '' as "NossoNumero", null as "DigNossoNum", 'T' as "TituloCaixa",
 'BLT' as "TipoNegociacao", null as "NroCarga", null as "PerJuroMora",
 pf.dataentrada AS "DtaMovimento", null as "OrdenaCarga", null as "DtaCarga",
-'J' as "Situacao", null as "Origem", 2 as "SeqDepositario", 'ORCAMENTO' as "UsuAlteracao",
+'J' as "Situacao", null as "Origem", null as "SeqTitulo", 2 as "SeqDepositario",
+/*Na hora da inserção falar com o pessoal da Consinco*/
+'' as "NroProcesso", 'ORCAMENTO' as "UsuAlteracao",
 null as "IndReplicacao", null as "IndGerouReplicacao", null as "VlrDescComercial",
 null as "SitCheqDev", null as "CodBarra", null as "LotePagto", 'N' as "SitJuridica",
 null as "Percadministracao", null as "Vlradministracao", null as "Dtacontabilizacao",

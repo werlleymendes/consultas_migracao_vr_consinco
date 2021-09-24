@@ -30,7 +30,7 @@ null as "Origem",
 '' as "SeqTitulo", 1 as "SeqDepositario", 
 /*Quando for rodar o insert, solicitar ajuda ao analista da TOTVS*/
 '' as "NroProcesso", 'ORCAMENTO' as "UsuAlteracao", null as "IndReplicacao", 
-null as "IndGerouReplicacao", null as "VlrDescComercial", 'H' as "SitCheqDev",
+null as "IndGerouReplicacao", null as "VlrDescComercial", null as "SitCheqDev",
 null as "CodBarra", null as "LotePagto", 'N' as "SitJuridica", null as "Percadministracao",
 null as "Vlradministracao", 
 null as "Dtacontabilizacao", null as "Linkerp", null as "Qtdparcela", 
