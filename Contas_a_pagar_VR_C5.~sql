@@ -13,7 +13,7 @@ SitJuridica, Percadministracao, Vlradministracao, Dtacontabilizacao, linkerp,
 Qtdparcela, Seqboleto, Seqmotorista, Percdesccontrato,
 Vlrdesccontrato, Justcancel, CMC7, Apporigem, Seqpessoaemitente, 
 PrazoCompror, TaxaCompror, DtaBaseCobranca, VLRICMSSTPARC1,  Numeronfse)  
-SELECT CONSINCO.S_FINANCEIRO.NEXTVAL "SeqIntTitulo", 1 "TipoRegistro", 
+SELECT getid "SeqIntTitulo", 1 "TipoRegistro", 
 1  "NroEmpresaMae",
 --A nossa loja 4 no VR será a loja N°3 no consinco, por isso a necessidade de mudar na query 
 CASE 
@@ -60,9 +60,9 @@ null  "Agencia", null  "NroCompensacao", null  "CtaEmitente", null  "ProprioTerc
 'BLT'  "TipoNegociacao", null  "NroCarga", null  "PerJuroMora", 
 ne."dataentrada" "DtaMovimento", null  "OrdenaCarga", null  "DtaCarga",
 'J'  "Situacao", null  "Origem", 
-CONSINCO.S_FINANCEIRO.NEXTVAL "SeqTitulo",
+getid "SeqTitulo",
 2  "SeqDepositario",
-CONSINCO.S_FINANCEIRO.NEXTVAL "NroProcesso",
+getid "NroProcesso",
  'IMPORTACAO'  "UsuAlteracao",
 null  "IndReplicacao", null  "IndGerouReplicacao", null  "VlrDescComercial",
 null  "SitCheqDev", null  "CodBarra", null  "LotePagto", 'N'  "SitJuridica",
@@ -108,14 +108,31 @@ ON pff."id" = pfvba.id
 WHERE pff."id_situacaopagarfornecedorparcela" = 0
 AND pf."numerodocumento" = '120153';
 
+
+create or replace function getid return number is begin return CONSINCO.S_FINANCEIRO.NEXTVAL; end;
+
+
+
+INSERT INTO consinco.Fi_Inttituloope (seqinttitulo, codoperacao,
+seqop, vlroperacao, anotacao, seqtitoperacao, indreplicacao, indgeroureplicacao,
+SeqCtacorrente, dtaoperacao, dtacontabilizacao, geractapartida)
+SELECT it.SeqIntTitulo, 16 "CodOperacao", null "SeqOP", 
+it.VlrOriginal "VlrOperacao", null "VlrOperacao", 
+CONSINCO.S_FINANCEIRO.NEXTVAL "SeqTitOperacao", null "IndReplicacao",
+null "IndGerouReplicacao", null "SeqCtacorrente", '22-09-2021' "DtaOperacao",
+'22-09-2021', null "DtaContabilizacao"
+FROM consinco.FI_IntTitulo it
+WHERE it.seqinttitulo NOT IN (SELECT seqinttitulo FROM consinco.fi_inttituloope);
+
 --SELECT * FROM "view_contasapagar"@pg;
 
 --SELECT * FROM consinco.map_produto p WHERE trunc(p.dtahorinclusao) = '09-09-2021'
 
 --SELECT sysdate FROM dual;
-DELETE FROM consinco.fi_inttitulo f WHERE f.seqinttitulo = 631; 
+DELETE FROM consinco.fi_inttitulo f WHERE f.seqinttitulo = 52652;
+DELETE FROM consinco.fi_inttituloope f WHERE f.seqinttitulo = 1122;
 sELECT * FROM consinco.fi_inttitulo;
-
+sELECT * FROM consinco.fi_inttituloope;
 /*CONSULTA UTILIZADA PARA FAZER INSERT NA TABELA Tabela FI_IntTitulo*/
 /*
 select p.desccompleta  produto, f.familia  DESCRICAO_FAMILIA, f.pesavel,
