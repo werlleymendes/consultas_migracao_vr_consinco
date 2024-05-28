@@ -10,7 +10,8 @@ Quando migramos do ERP VR(ou outro qualquer) para o Consinco, há a opção de i
 2. É necessário a verificação junto com o financeiro/comercial quais tabelas necessitam ser importadas. As tabelas podem ser verificadas no link [Importação dos Títulos a Receber / a Pagar e Cheques](https://tdn.totvs.com/pages/releaseview.action?pageId=573699157).
     - Se a intenção for inserir titulos como no exemplo, duas tabelas são obrigatórias: a tabela **FI_IntTitulo** e a tabela **FI_IntTituloOpe**.
     - A necessidade de importação das outras tabelas dependerá da operação da loja, por exemplo só será nessário importar a tabela **FI_IntTituloComissao** se a loja trabalhar com comissão.
-3. Deve ser Criado uma sequence para inserção na tabela 
+3. Deve ser Criado uma sequence para inserção na tabela
+4. É necessário a criação de uma **sequence** que será utilizada para todas as queries. A **sequence** será utilizada em todos os scripts de insert.
 
 ## Scripts
 

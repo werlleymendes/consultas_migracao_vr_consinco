@@ -10,3 +10,5 @@
 - pagarfornecedorparceladevolucao
 - pagarfornecedorparcelaverba
 
+Utilizar os scripts na ordem em que estão no scripts.
+
